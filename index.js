@@ -92,6 +92,7 @@ app.post("/coordinates", upload.single("video"), (req, res, next) => {
               return;
             }
             console.log(`stdout: ${stdout}`);
+            console.log(coordinates);
             res.json({
               keypoints: coordinates,
             });
