@@ -48,7 +48,7 @@ app.post("/coordinates", upload.single("video"), (req, res, next) => {
   console.log("xxxxxxxxxxxxxxxxxxxxxx")
 
   //"cd ~/openpose && ./build/examples/openpose/openpose.bin --hand --keypoint_scale 3 --video ../openpose-server/public/videos/${file.originalname} --write_json '../jsons-temporal/' --display 0 "
-  exec(`cd ~/openpose && ./build/examples/openpose/openpose.bin --hand --keypoint_scale 3 --video ../openpose-server/public/videos/${file.originalname} --write_json '../jsons-temporal/' --display 0`, (error, stdout, stderr) => {
+  exec(`cd ~/openpose && ./build/examples/openpose/openpose.bin --hand --keypoint_scale 3 --video ../openpose-server/public/videos/${file.originalname} --write_json '../jsons-temporal/' --write_video '../videos-salida/prueba.avi' --display 0`, (error, stdout, stderr) => {
     if (error) {
       console.log(`error: ${error.message}`);
       return;
