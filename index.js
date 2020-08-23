@@ -43,8 +43,12 @@ app.post("/coordinates", upload.single("video"), (req, res, next) => {
     error.httpStatusCode = 400;
     return next(error);
   }
-  console.log(file);
-  exec("cd ~ && ls", (error, stdout, stderr) => {
+  console.log("xxxxxxxxxxxxxxxxxxxxxx")
+  console.log(file.originalname);
+  console.log("xxxxxxxxxxxxxxxxxxxxxx")
+
+  //"cd ~/openpose && ./build/examples/openpose/openpose.bin --hand --keypoint_scale 3 --video ../openpose-server/public/videos/${file.originalname} --write_json '../jsons-temporal/' --display 0 "
+  exec(`cd ~/openpose && ./build/examples/openpose/openpose.bin --hand --keypoint_scale 3 --video ../openpose-server/public/videos/${file.originalname} --write_json '../jsons-temporal/' --display 0`, (error, stdout, stderr) => {
     if (error) {
       console.log(`error: ${error.message}`);
       return;
