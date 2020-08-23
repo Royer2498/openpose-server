@@ -7,6 +7,7 @@ var upload = multer({ dest: "./public/videos" });
 var path = require("path");
 const { spawn } = require("child_process");
 const fs = require("fs");
+const { exec } = require("child_process");
 const directoryPath = path.join("/home/royer/jsons-temporal");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -42,20 +43,58 @@ app.post("/coordinates", upload.single("video"), (req, res, next) => {
     error.httpStatusCode = 400;
     return next(error);
   }
-  
-  var coordinates;
-  const python = spawn("python3", ["./public/scripts/script.py"]);
-  python.stdout.on("data", function (data) {
-    if(data.toString()[0] == '['){
-        coordinates = data.toString();
-        coordinates = coordinates.substring(1, coordinates.length-1)
-        coordinates = coordinates.split(",").map(Number);
+  console.log(file);
+  exec("cd ~ && ls", (error, stdout, stderr) => {
+    if (error) {
+      console.log(`error: ${error.message}`);
+      return;
     }
-  });
-  python.on("close", (code) => {
-    res.json({
-        keypoints: coordinates
-    });
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+    console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+    exec(
+      "cd ~/openpose-server && rm public/videos/*",
+      (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+        }
+        console.log(`stdout: ${stdout}`);
+
+        var coordinates;
+        const python = spawn("python3", ["./public/scripts/script.py"]);
+        python.stdout.on("data", function (data) {
+          if (data.toString()[0] == "[") {
+            coordinates = data.toString();
+            coordinates = coordinates.substring(1, coordinates.length - 1);
+            coordinates = coordinates.split(",").map(Number);
+          }
+        });
+        python.on("close", (code) => {
+          exec("cd ~ && rm jsons-temporal/* ", (error, stdout, stderr) => {
+            if (error) {
+              console.log(`error: ${error.message}`);
+              return;
+            }
+            if (stderr) {
+              console.log(`stderr: ${stderr}`);
+              return;
+            }
+            console.log(`stdout: ${stdout}`);
+            res.json({
+              keypoints: coordinates,
+            });
+          });
+        });
+      }
+    );
   });
 });
 
@@ -64,19 +103,19 @@ app.get("/script", (req, res) => {
   const python = spawn("python3", ["./public/scripts/script.py"]);
   python.stdout.on("data", function (data) {
     console.log("Pipe data from python script ...");
-    console.log(data.toString())
-    if(data.toString()[0] == '['){
-        dataToSend = data.toString();
-        dataToSend = dataToSend.substring(1, dataToSend.length-1)
-        dataToSend = dataToSend.split(",").map(Number);
-        console.log(dataToSend[dataToSend.length-1])
+    console.log(data.toString());
+    if (data.toString()[0] == "[") {
+      dataToSend = data.toString();
+      dataToSend = dataToSend.substring(1, dataToSend.length - 1);
+      dataToSend = dataToSend.split(",").map(Number);
+      console.log(dataToSend[dataToSend.length - 1]);
     }
   });
   python.on("close", (code) => {
     console.log(`child process close all stdio with code ${code}`);
-    console.log(dataToSend)
+    console.log(dataToSend);
     res.json({
-        keypoints: dataToSend
+      keypoints: dataToSend,
     });
   });
 });
