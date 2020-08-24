@@ -75,6 +75,7 @@ app.post("/coordinates", upload.single("video"), (req, res, next) => {
         var coordinates;
         const python = spawn("python3", ["./public/scripts/script.py"]);
         python.stdout.on("data", function (data) {
+            console.log(data.toString())
           if (data.toString()[0] == "[") {
             coordinates = data.toString();
             coordinates = coordinates.substring(1, coordinates.length - 1);
@@ -92,7 +93,7 @@ app.post("/coordinates", upload.single("video"), (req, res, next) => {
               return;
             }
             console.log(`stdout: ${stdout}`);
-            console.log(coordinates);
+            console.log(coordinates); 
             res.json({
               keypoints: coordinates,
             });
