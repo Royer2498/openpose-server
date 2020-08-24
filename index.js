@@ -60,7 +60,7 @@ app.post("/coordinates", upload.single("video"), (req, res, next) => {
         return;
       }
       console.log(`stdout: ${stdout}`);
-      console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+      console.log("xxxxxxxxxxxxxxx Finalizo openpose xxxxxxxxxxxxxxxxxxxx");
       exec(
         "cd ~/openpose-server && rm public/videos/*",
         (error, stdout, stderr) => {
@@ -73,6 +73,7 @@ app.post("/coordinates", upload.single("video"), (req, res, next) => {
             return;
           }
           console.log(`stdout: ${stdout}`);
+          console.log("Iniciando con el script de python");
 
           var coordinates;
           const python = spawn("python3", ["./public/scripts/script.py"]);
@@ -96,7 +97,8 @@ app.post("/coordinates", upload.single("video"), (req, res, next) => {
                 return;
               }
               console.log(`stdout: ${stdout}`);
-              console.log(coordinates);
+              console.log("xxxxxxxxxxxxxxx coordenadas xxxxxxxxxxxxxx")
+	      console.log(coordinates.length)
               res.json({
                 keypoints: coordinates,
               });
@@ -125,7 +127,8 @@ app.get("/script", (req, res) => {
     console.log(`child process close all stdio with code ${code}`);
     console.log(dataToSend);
     res.json({
-      keypoints: dataToSend,
+      response: true,
+      keypoints: false,
     });
   });
 });
