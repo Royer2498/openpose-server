@@ -43,65 +43,69 @@ app.post("/coordinates", upload.single("video"), (req, res, next) => {
     error.httpStatusCode = 400;
     return next(error);
   }
-  console.log("xxxxxxxxxxxxxxxxxxxxxx")
+  console.log("xxxxxxxxxxxxxxxxxxxxxx");
   console.log(file.originalname);
-  console.log("xxxxxxxxxxxxxxxxxxxxxx")
+  console.log("xxxxxxxxxxxxxxxxxxxxxx");
 
   //"cd ~/openpose && ./build/examples/openpose/openpose.bin --hand --keypoint_scale 3 --video ../openpose-server/public/videos/${file.originalname} --write_json '../jsons-temporal/' --display 0 "
-  exec(`cd ~/openpose && ./build/examples/openpose/openpose.bin --hand --keypoint_scale 3 --video ../openpose-server/public/videos/${file.originalname} --write_json '../jsons-temporal/' --write_video '../videos-salida/prueba.avi' --display 0`, (error, stdout, stderr) => {
-    if (error) {
-      console.log(`error: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      console.log(`stderr: ${stderr}`);
-      return;
-    }
-    console.log(`stdout: ${stdout}`);
-    console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-    exec(
-      "cd ~/openpose-server && rm public/videos/*",
-      (error, stdout, stderr) => {
-        if (error) {
-          console.log(`error: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          console.log(`stderr: ${stderr}`);
-          return;
-        }
-        console.log(`stdout: ${stdout}`);
-
-        var coordinates;
-        const python = spawn("python3", ["./public/scripts/script.py"]);
-        python.stdout.on("data", function (data) {
-            console.log(data.toString())
-          if (data.toString()[0] == "[") {
-            coordinates = data.toString();
-            coordinates = coordinates.substring(1, coordinates.length - 1);
-            coordinates = coordinates.split(",").map(Number);
+  exec(
+    `cd ~/openpose && ./build/examples/openpose/openpose.bin --hand --keypoint_scale 3 --video ../openpose-server/public/videos/${file.originalname} --write_json '../jsons-temporal/' --write_video '../videos-salida/prueba.avi' --display 0`,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
+      console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+      exec(
+        "cd ~/openpose-server && rm public/videos/*",
+        (error, stdout, stderr) => {
+          if (error) {
+            console.log(`error: ${error.message}`);
+            return;
           }
-        });
-        python.on("close", (code) => {
-          exec("cd ~ && rm jsons-temporal/* ", (error, stdout, stderr) => {
-            if (error) {
-              console.log(`error: ${error.message}`);
-              return;
+          if (stderr) {
+            console.log(`stderr: ${stderr}`);
+            return;
+          }
+          console.log(`stdout: ${stdout}`);
+
+          var coordinates;
+          const python = spawn("python3", ["./public/scripts/script.py"]);
+          python.stdout.on("data", function (data) {
+            console.log("xxxxxxxxxxxxxxxxxxxx data xxxxxxxxxxxxxx");
+            console.log(data.toString());
+            if (data.toString()[0] == "[") {
+              coordinates = data.toString();
+              coordinates = coordinates.substring(1, coordinates.length - 1);
+              coordinates = coordinates.split(",").map(Number);
             }
-            if (stderr) {
-              console.log(`stderr: ${stderr}`);
-              return;
-            }
-            console.log(`stdout: ${stdout}`);
-            console.log(coordinates); 
-            res.json({
-              keypoints: coordinates,
+          });
+          python.on("close", (code) => {
+            exec("cd ~ && rm jsons-temporal/* ", (error, stdout, stderr) => {
+              if (error) {
+                console.log(`error: ${error.message}`);
+                return;
+              }
+              if (stderr) {
+                console.log(`stderr: ${stderr}`);
+                return;
+              }
+              console.log(`stdout: ${stdout}`);
+              console.log(coordinates);
+              res.json({
+                keypoints: coordinates,
+              });
             });
           });
-        });
-      }
-    );
-  });
+        }
+      );
+    }
+  );
 });
 
 app.get("/script", (req, res) => {
