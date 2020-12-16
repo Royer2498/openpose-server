@@ -175,8 +175,18 @@ def getOutputsFromCsvDataSet(direction, numerOfClasses):
 input_path =  '../jsons-temporal/'
 output_csv_path_ = './public/results/result.csv'
 
-output_size = 480
-number_frames = 5
+# Para 5 keyframes
+#output_size = 480
+
+#Para 9 keyframes
+output_size = 864
+
+# Para 5 keyframes
+# number_frames = 5
+
+#Para 9 keyframes
+number_frames = 9
+
 createHeader(output_size, output_csv_path_)
 
 count = 0
