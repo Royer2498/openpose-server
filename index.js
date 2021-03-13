@@ -61,55 +61,52 @@ app.post("/coordinates", upload.single("video"), (req, res, next) => {
       }
       console.log(`stdout: ${stdout}`);
       console.log("xxxxxxxxxxxxxxx Finalizo openpose xxxxxxxxxxxxxxxxxxxx");
-      res.json({
-        keypoints: "Hola"
-      });
+      
+      exec(
+        "cd ~/openpose-server && rm public/videos/*",
+        (error, stdout, stderr) => {
+          if (error) {
+            console.log(`error: ${error.message}`);
+            return;
+          }
+          if (stderr) {
+            console.log(`stderr: ${stderr}`);
+            return;
+          }
+          console.log(`stdout: ${stdout}`);
+          console.log("Iniciando con el script de python");
 
-      // exec(
-      //   "cd ~/openpose-server && rm public/videos/*",
-      //   (error, stdout, stderr) => {
-      //     if (error) {
-      //       console.log(`error: ${error.message}`);
-      //       return;
-      //     }
-      //     if (stderr) {
-      //       console.log(`stderr: ${stderr}`);
-      //       return;
-      //     }
-      //     console.log(`stdout: ${stdout}`);
-      //     console.log("Iniciando con el script de python");
-
-      //     var coordinates;
-      //     const python = spawn("python3", ["./public/scripts/script.py"]);
-      //     python.stdout.on("data", function (data) {
-      //       console.log("xxxxxxxxxxxxxxxxxxxx data xxxxxxxxxxxxxx");
-      //       console.log(data.toString());
-      //       if (data.toString()[0] == "[") {
-      //         coordinates = data.toString();
-      //         coordinates = coordinates.substring(1, coordinates.length - 1);
-      //         coordinates = coordinates.split(",").map(Number);
-      //       }
-      //     });
-      //     python.on("close", (code) => {
-      //       exec("cd ~ && rm jsons-temporal/* ", (error, stdout, stderr) => {
-      //         if (error) {
-      //           console.log(`error: ${error.message}`);
-      //           return;
-      //         }
-      //         if (stderr) {
-      //           console.log(`stderr: ${stderr}`);
-      //           return;
-      //         }
-      //         console.log(`stdout: ${stdout}`);
-      //         console.log("xxxxxxxxxxxxxxx coordenadas xxxxxxxxxxxxxx")
-	    //         console.log(coordinates.length)
-      //         res.json({
-      //           keypoints: coordinates,
-      //         });
-      //       });
-      //     });
-      //   }
-      // );
+          var coordinates;
+          const python = spawn("python3", ["./public/scripts/script.py"]);
+          python.stdout.on("data", function (data) {
+            console.log("xxxxxxxxxxxxxxxxxxxx data xxxxxxxxxxxxxx");
+            console.log(data.toString());
+            if (data.toString()[0] == "[") {
+              coordinates = data.toString();
+              coordinates = coordinates.substring(1, coordinates.length - 1);
+              coordinates = coordinates.split(",").map(Number);
+            }
+          });
+          python.on("close", (code) => {
+            exec("cd ~ && rm jsons-temporal/* ", (error, stdout, stderr) => {
+              if (error) {
+                console.log(`error: ${error.message}`);
+                return;
+              }
+              if (stderr) {
+                console.log(`stderr: ${stderr}`);
+                return;
+              }
+              console.log(`stdout: ${stdout}`);
+              console.log("xxxxxxxxxxxxxxx coordenadas xxxxxxxxxxxxxx")
+	            console.log(coordinates.length)
+              res.json({
+                keypoints: coordinates,
+              });
+            });
+          });
+        }
+      );
     }
   );
 });
