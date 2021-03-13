@@ -172,8 +172,8 @@ def getOutputsFromCsvDataSet(direction, numerOfClasses):
     responseCounters[labelsAux[index]] = responseCounters[labelsAux[index]] + 1
   return responseCounters
 
-input_path =  '../../../jsons-temporal/'
-output_csv_path_ = '../../public/results/result.csv'
+input_path =  '../jsons-temporal/'
+output_csv_path_ = './public/results/result.csv'
 
 # Para 5 keyframes
 #output_size = 480
