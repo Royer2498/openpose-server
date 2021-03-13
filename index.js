@@ -87,6 +87,14 @@ app.post("/coordinates", upload.single("video"), (req, res, next) => {
               coordinates = coordinates.split(",").map(Number);
             }
           });
+          python.stderr.on('data', function(data) {
+            console.log("Erroooooooooooor xxxxxx");
+            console.error(data.toString());
+          });
+
+          python.on('exit', function(code) {
+            console.log("Exited with code " + code);
+          });
           python.on("close", (code) => {
             exec("cd ~ && rm jsons-temporal/* ", (error, stdout, stderr) => {
               if (error) {
